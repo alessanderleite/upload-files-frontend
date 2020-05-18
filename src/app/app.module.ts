@@ -2,7 +2,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { HttpClientModule } from '@angular/common/http';
 import { UploadFilesComponent } from './components/upload-files/upload-files.component';
+import { from } from 'rxjs';
 
 @NgModule({
   declarations: [
@@ -10,7 +12,8 @@ import { UploadFilesComponent } from './components/upload-files/upload-files.com
     UploadFilesComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
