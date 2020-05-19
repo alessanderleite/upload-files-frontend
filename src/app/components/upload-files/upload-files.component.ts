@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { UploadFilesService } from 'src/app/services/upload-files.service';
+import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-upload-files',
@@ -7,9 +10,45 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UploadFilesComponent implements OnInit {
 
-  constructor() { }
+  selectedFiles: FileList;
+  progressInfos = [];
+  message = '';
+
+  fileInfos: Observable<any>;
+
+  constructor(private uploadService: UploadFilesService) { }
 
   ngOnInit(): void {
+    this.fileInfos = this.uploadService.getFiles();
   }
 
+  selectFiles(event: { target: { files: (event: any) => void; }; }) {
+    this.progressInfos = [];
+    this.selectFiles = event.target.files;
+  }
+
+  upload(idx: string | number, file: File) {
+    this.progressInfos[idx] = { value: 0, fileName: file.name };
+
+    this.uploadService.upload(file).subscribe(
+      event => {
+        if (event.type === HttpEventType.UploadProgress) {
+          this.progressInfos[idx].value = Math.round(100 * event.loaded / event.total);
+        }
+      },
+      err => {
+        this.progressInfos[idx].value = 0;
+        this.message = 'Could not upload the file: ' + file.name;
+      }
+    );
+  }
+
+  uploadFiles() {
+    this.message = '';
+
+    for (let i = 0; i < this.selectFiles.length; i++) {
+      this.upload(i, this.selectFiles[i]);
+      
+    }
+  }
 }
